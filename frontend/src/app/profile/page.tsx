@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { UserCircle, Star, Trash2, Edit2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -50,6 +51,7 @@ export default function ProfilePage() {
     setSaving(true);
     try {
       const res = await api.patch("/auth/profile/", {
+        username: editForm.username,
         first_name: editForm.first_name,
         last_name: editForm.last_name,
         email: editForm.email,
@@ -92,7 +94,7 @@ export default function ProfilePage() {
     if (!editingReview) return;
     try {
       const res = await api.put(`/reviews/${editingReview.id}/`, { rating: parseFloat(rating), comment });
-      setReviews(reviews.map(r => r.id === editingReview.id ? { ...r, ...res.data } : r));
+      setReviews(reviews.map(r => r.id === editingReview.id ? { ...r, ...res.data, medicine: r.medicine } : r));
       setEditingReview(null);
     } catch (err) {
       console.error("Error updating review", err);
@@ -108,9 +110,18 @@ export default function ProfilePage() {
       <div className="max-w-3xl mx-auto px-6 py-16">
         
         {/* Header Profile Info */}
-        <header className="flex items-center gap-6 mb-16">
-          <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0">
-            <UserCircle className="w-12 h-12 text-slate-300 dark:text-slate-700" strokeWidth={1} />
+        <header className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mb-12 sm:mb-16 text-center sm:text-left">
+          <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0 overflow-hidden relative shadow-sm">
+            {(profile.gender === "Male" || profile.gender === "Female") ? (
+              <Image 
+                src={profile.gender === "Female" ? "/avatars/female.png" : "/avatars/male.png"}
+                alt="User Avatar"
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <UserCircle className="w-12 h-12 text-slate-300 dark:text-slate-700" strokeWidth={1} />
+            )}
           </div>
           <div>
             <h1 className="text-3xl font-light tracking-tight">{profile.first_name} {profile.last_name}</h1>
@@ -155,6 +166,15 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="username" className="text-xs font-medium text-slate-500">Username</Label>
+                    <Input 
+                      id="username" 
+                      value={editForm.username || ""} 
+                      onChange={(e) => setEditForm({...editForm, username: e.target.value})} 
+                      className="border-slate-200 shadow-none focus-visible:ring-1 focus-visible:ring-slate-400"
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="email" className="text-xs font-medium text-slate-500">Email Address</Label>
                     <Input 
                       id="email" 
@@ -173,7 +193,7 @@ export default function ProfilePage() {
                       className="border-slate-200 shadow-none focus-visible:ring-1 focus-visible:ring-slate-400"
                     />
                   </div>
-                  <div className="space-y-2 md:col-span-2">
+                  <div className="space-y-2">
                     <Label htmlFor="gender" className="text-xs font-medium text-slate-500">Gender</Label>
                     <Select value={editForm.gender || ""} onValueChange={(v: any) => setEditForm({...editForm, gender: (v as string) || ""})}>
                       <SelectTrigger className="border-slate-200 shadow-none focus-visible:ring-1 focus-visible:ring-slate-400">
@@ -182,7 +202,6 @@ export default function ProfilePage() {
                       <SelectContent>
                         <SelectItem value="Male">Male</SelectItem>
                         <SelectItem value="Female">Female</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -244,20 +263,43 @@ export default function ProfilePage() {
                         
                         <div className="space-y-2">
                           <Label className="text-xs font-medium text-slate-500">Rating</Label>
-                          <div className="flex gap-1">
+                          <div className="flex items-center gap-1">
                             {[1, 2, 3, 4, 5].map((star) => {
                               const currentRating = hoverRating || parseFloat(rating);
                               const isFull = star <= currentRating;
+                              const isHalf = star - 0.5 === currentRating;
+                              
                               return (
                                 <button
                                   key={star}
                                   type="button"
-                                  className="focus:outline-none"
-                                  onMouseEnter={() => setHoverRating(star)}
+                                  className="focus:outline-none transition-transform hover:scale-110 relative w-6 h-6"
+                                  onMouseMove={(e) => {
+                                    const { left, width } = e.currentTarget.getBoundingClientRect();
+                                    const percent = (e.clientX - left) / width;
+                                    setHoverRating(star - 1 + (percent <= 0.5 ? 0.5 : 1));
+                                  }}
                                   onMouseLeave={() => setHoverRating(0)}
                                   onClick={() => setRating((hoverRating || parseFloat(rating)).toString())}
                                 >
-                                  <Star className={`w-5 h-5 ${isFull ? 'fill-slate-900 text-slate-900 dark:fill-slate-100 dark:text-slate-100' : 'text-slate-300 dark:text-slate-700'}`} />
+                                  <svg
+                                    className="absolute inset-0 w-6 h-6 text-slate-300 dark:text-slate-600 fill-transparent"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                  </svg>
+                                  <div className={`absolute inset-0 overflow-hidden ${isHalf ? 'w-1/2' : isFull ? 'w-full' : 'w-0'}`}>
+                                    <svg
+                                      className="w-6 h-6 text-yellow-500 fill-yellow-500"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                    </svg>
+                                  </div>
                                 </button>
                               );
                             })}
@@ -303,12 +345,23 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="flex items-center gap-1 mb-3">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <Star 
-                              key={star} 
-                              className={`w-3.5 h-3.5 ${star <= review.rating ? 'fill-slate-900 text-slate-900 dark:fill-slate-100 dark:text-slate-100' : 'text-slate-200 dark:text-slate-800'}`} 
-                            />
-                          ))}
+                          {[1, 2, 3, 4, 5].map(star => {
+                            const ratingValue = Number(review.rating);
+                            const isFull = star <= ratingValue;
+                            const isHalf = star - 0.5 === ratingValue;
+                            return (
+                              <div key={star} className="relative w-4 h-4">
+                                <svg className="absolute inset-0 w-4 h-4 text-slate-300 dark:text-slate-600 fill-transparent" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                </svg>
+                                <div className={`absolute inset-0 overflow-hidden ${isHalf ? 'w-1/2' : isFull ? 'w-full' : 'w-0'}`}>
+                                  <svg className="w-4 h-4 text-yellow-500 fill-yellow-500" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                  </svg>
+                                </div>
+                              </div>
+                            );
+                          })}
                           <span className="text-xs text-slate-400 ml-2">{new Date(review.created_at).toLocaleDateString()}</span>
                         </div>
                         

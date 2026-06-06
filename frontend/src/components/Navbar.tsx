@@ -41,31 +41,31 @@ export default function Navbar() {
           <Pill className="w-8 h-8" />
           MedRev
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1 sm:gap-4">
           <Link href="/">
-            <Button variant="ghost" className="gap-2"><Search className="w-4 h-4" />Search Medicine</Button>
+            <Button variant="ghost" className="gap-2 px-2 sm:px-4"><Search className="w-4 h-4" /><span className="hidden md:inline">Search</span></Button>
           </Link>
           <Link href="/medicines">
-            <Button variant="ghost" className="gap-2"><List className="w-4 h-4" />All Medicines</Button>
+            <Button variant="ghost" className="gap-2 px-2 sm:px-4"><List className="w-4 h-4" /><span className="hidden md:inline">Medicines</span></Button>
           </Link>
           {isAuthenticated ? (
             <>
               <Link href="/profile">
-                <Button variant="ghost" className="gap-2 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/30">
-                  <User className="w-4 h-4" />Profile
+                <Button variant="ghost" className="gap-2 px-2 sm:px-4 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/30">
+                  <User className="w-4 h-4" /><span className="hidden sm:inline">Profile</span>
                 </Button>
               </Link>
-              <Button variant="outline" onClick={handleLogout} className="gap-2">
-                <LogOut className="w-4 h-4" />Logout
+              <Button variant="outline" onClick={handleLogout} className="gap-2 px-2 sm:px-4">
+                <LogOut className="w-4 h-4" /><span className="hidden sm:inline">Logout</span>
               </Button>
             </>
           ) : (
             <>
-              <Button variant="outline" className="gap-2" onClick={() => setIsLoginOpen(true)}>
-                <LogIn className="w-4 h-4" />Login
+              <Button variant="outline" className="gap-2 px-2 sm:px-4" onClick={() => setIsLoginOpen(true)}>
+                <LogIn className="w-4 h-4" /><span className="hidden sm:inline">Login</span>
               </Button>
-              <Button className="gap-2" onClick={() => setIsRegisterOpen(true)}>
-                <UserPlus className="w-4 h-4" />Sign Up
+              <Button className="gap-2 px-2 sm:px-4" onClick={() => setIsRegisterOpen(true)}>
+                <UserPlus className="w-4 h-4" /><span className="hidden sm:inline">Sign Up</span>
               </Button>
             </>
           )}

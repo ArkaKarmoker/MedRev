@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LogIn } from "lucide-react";
 
 export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: (open: boolean) => void }) {
   const [username, setUsername] = useState("");
@@ -77,8 +77,8 @@ export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClo
               </button>
             </div>
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Login"}
+          <Button type="submit" className="w-full gap-2" disabled={isLoading}>
+            <LogIn className="w-4 h-4" /> {isLoading ? "Logging in..." : "Login"}
           </Button>
         </form>
       </DialogContent>

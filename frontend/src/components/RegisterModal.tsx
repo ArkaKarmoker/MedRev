@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
 
 export default function RegisterModal({ isOpen, onClose }: { isOpen: boolean; onClose: (open: boolean) => void }) {
   const [firstName, setFirstName] = useState("");
@@ -86,7 +86,7 @@ export default function RegisterModal({ isOpen, onClose }: { isOpen: boolean; on
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="reg-first-name">First Name</Label>
               <Input id="reg-first-name" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
@@ -102,7 +102,7 @@ export default function RegisterModal({ isOpen, onClose }: { isOpen: boolean; on
             <Input id="reg-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="reg-username">Username</Label>
               <Input id="reg-username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
@@ -122,12 +122,11 @@ export default function RegisterModal({ isOpen, onClose }: { isOpen: boolean; on
               <SelectContent>
                 <SelectItem value="Male">Male</SelectItem>
                 <SelectItem value="Female">Female</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="reg-password">Password</Label>
               <div className="relative">
@@ -170,8 +169,8 @@ export default function RegisterModal({ isOpen, onClose }: { isOpen: boolean; on
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing up..." : "Sign Up"}
+          <Button type="submit" className="w-full gap-2" disabled={isLoading}>
+            <UserPlus className="w-4 h-4" /> {isLoading ? "Signing up..." : "Sign Up"}
           </Button>
         </form>
       </DialogContent>

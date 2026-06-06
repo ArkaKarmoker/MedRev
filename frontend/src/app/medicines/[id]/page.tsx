@@ -61,7 +61,7 @@ export default function MedicineDetailPage() {
     try {
       if (editingReview) {
         const res = await api.put(`/reviews/${editingReview.id}/`, { rating: parseFloat(rating), comment });
-        setReviews(reviews.map(r => r.id === editingReview.id ? { ...r, ...res.data } : r));
+        setReviews(reviews.map(r => r.id === editingReview.id ? { ...r, ...res.data, user: r.user } : r));
         setEditingReview(null);
       } else {
         const res = await api.post(`/reviews/medicine/${id}/`, { rating: parseFloat(rating), comment });
@@ -329,8 +329,9 @@ export default function MedicineDetailPage() {
                       </div>
                       <div className="flex items-center gap-1 text-yellow-500 my-1">
                         {[1, 2, 3, 4, 5].map(star => {
-                          const isFull = star <= review.rating;
-                          const isHalf = star - 0.5 === review.rating;
+                          const ratingValue = Number(review.rating);
+                          const isFull = star <= ratingValue;
+                          const isHalf = star - 0.5 === ratingValue;
                           return (
                             <div key={star} className="relative w-4 h-4">
                               <svg className="absolute inset-0 w-4 h-4 text-slate-300 dark:text-slate-600 fill-transparent" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

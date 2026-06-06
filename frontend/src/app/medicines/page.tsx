@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/use-debounce";
-import { ChevronUp, ChevronDown, ChevronsUpDown, FilterX, Eye, Star, ChevronLeft, ChevronRight, Send, Search } from "lucide-react";
+import { ChevronUp, ChevronDown, ChevronsUpDown, FilterX, Eye, Star, ChevronLeft, ChevronRight, Send, Search, X } from "lucide-react";
 
 interface Medicine {
   id: number;
@@ -190,7 +190,7 @@ export default function MedicinesPage() {
             </SelectContent>
           </Select>
 
-          {(search || (type && type !== 'All') || (dosageForm && dosageForm !== 'All')) && (
+          {((type && type !== 'All') || (dosageForm && dosageForm !== 'All')) && (
             <Button 
               variant="ghost" 
               onClick={() => {
@@ -211,8 +211,17 @@ export default function MedicinesPage() {
             placeholder="Search medicines..." 
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
-            className="w-full xl:w-[250px] h-9 pl-9 bg-white dark:bg-slate-950"
+            className="w-full xl:w-[250px] h-9 pl-9 pr-8 bg-white dark:bg-slate-950"
           />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -321,7 +330,7 @@ export default function MedicinesPage() {
               Share your experience with {selectedMed?.name}.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleReviewSubmit} className="space-y-4">
+          <form onSubmit={handleReviewSubmit} className="space-y-4 mt-4">
             <div className="space-y-2">
               <Label>Rating</Label>
               <div className="flex items-center gap-1">
@@ -369,19 +378,16 @@ export default function MedicinesPage() {
             <div className="space-y-2">
               <Label>Comment</Label>
               <textarea 
-                className="w-full min-h-[100px] p-3 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full min-h-[100px] rounded-lg border border-input bg-transparent px-3 py-2 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30"
                 placeholder="How did this medicine work for you?"
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 required
               />
             </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setReviewModalOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={submittingReview} className="gap-2">
-                <Send className="w-4 h-4" /> {submittingReview ? "Submitting..." : "Submit Review"}
-              </Button>
-            </DialogFooter>
+            <Button type="submit" className="w-full gap-2" disabled={submittingReview}>
+              <Send className="w-4 h-4" /> {submittingReview ? "Submitting..." : "Submit Review"}
+            </Button>
           </form>
         </DialogContent>
       </Dialog>

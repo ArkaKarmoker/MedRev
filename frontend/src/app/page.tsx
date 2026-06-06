@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Building2, Pill, FlaskConical } from "lucide-react";
+import { Search, Building2, Pill, FlaskConical, X } from "lucide-react";
 import api from "@/lib/api";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -63,10 +63,19 @@ export default function Home() {
             <Input 
               type="text" 
               placeholder="Search by medicine name or generic name..." 
-              className="w-full pl-12 pr-4 py-8 text-lg rounded-full shadow-lg border-2 border-transparent focus-visible:ring-0 focus-visible:border-emerald-500 bg-white dark:bg-slate-900 transition-all"
+              className="w-full pl-12 pr-12 py-8 text-lg rounded-full shadow-lg border-2 border-transparent focus-visible:ring-0 focus-visible:border-emerald-500 bg-white dark:bg-slate-900 transition-all"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
+            {query && (
+              <button 
+                onClick={() => setQuery("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                aria-label="Clear search"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            )}
           </div>
 
           {(suggestions.length > 0 || loading) && (
@@ -86,9 +95,9 @@ export default function Home() {
                             {med.generic_name}
                           </div>
                           <div className="text-xs text-slate-500 mt-1 flex flex-wrap gap-3">
-                            {med.manufacturer && <span className="flex items-center gap-1"><Building2 className="w-3 h-3"/> {med.manufacturer}</span>}
-                            {med.type && <span className="flex items-center gap-1"><Pill className="w-3 h-3"/> {med.type}</span>}
-                            {med.dosage_form && <span className="flex items-center gap-1"><FlaskConical className="w-3 h-3"/> {med.dosage_form}</span>}
+                            {med.manufacturer && <span className="flex items-center gap-1"><Building2 className="w-3 h-3" /> {med.manufacturer}</span>}
+                            {med.type && <span className="flex items-center gap-1"><Pill className="w-3 h-3" /> {med.type}</span>}
+                            {med.dosage_form && <span className="flex items-center gap-1"><FlaskConical className="w-3 h-3" /> {med.dosage_form}</span>}
                           </div>
                         </Link>
                       </li>
