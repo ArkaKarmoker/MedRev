@@ -115,7 +115,7 @@ export default function RegisterModal({ isOpen, onClose }: { isOpen: boolean; on
 
           <div className="space-y-2">
             <Label htmlFor="reg-gender">Gender</Label>
-            <Select value={gender} onValueChange={setGender}>
+            <Select value={gender} onValueChange={(val) => setGender(val || "")}>
               <SelectTrigger id="reg-gender">
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
